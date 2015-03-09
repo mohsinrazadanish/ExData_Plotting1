@@ -1,13 +1,16 @@
 # The memory check was done and the data can be read in the memory
-# Getting complete dataset
 
-data <- read.table("./Data/household_power_consumption.txt", header=T, sep=';', na.strings="?", 
-                   nrows=2075259, check.names=F, stringsAsFactors=F, comment.char="", quote='\"')           
+# Getting complete dataset
+# The data file should be downloaded in the working directory
+# titled "household_power_consumption.txt" without the quotes
+
+data <- read.table("household_power_consumption.txt", header=T, sep=';', na.strings="?", 
+                   stringsAsFactors=F)           
+
 
 data$Date <- as.Date(data$Date, format="%d/%m/%Y")
 
 # Subsetting the data
-
 my_data <- subset(data, subset=(Date >= "2007-02-01" & Date <= "2007-02-02"))
 
 # Garbage Collection, clear un-necessary variables from memory
@@ -18,20 +21,20 @@ datetime <- paste(as.Date(my_data$Date), my_data$Time)
 my_data$Datetime <- as.POSIXct(datetime)
 
 # Plot 4
-par(mfrow=c(2,2), mar=c(4,4,2,1), oma=c(0,0,2,0))
+par(mfrow=c(2,2), mar=c(4,4,2,1), oma=c(0,0,2,0), bg="transparent")
 with(my_data, {
   plot(Global_active_power~Datetime, type="l", 
-       ylab="Global Active Power (kilowatts)", xlab="")
+       ylab="Global Active Power", xlab="")
   plot(Voltage~Datetime, type="l", 
-       ylab="Voltage (volt)", xlab="")
+       ylab="Voltage", xlab="datetime")
   plot(Sub_metering_1~Datetime, type="l", 
-       ylab="Global Active Power (kilowatts)", xlab="")
+       ylab="Energy sub metering", xlab="")
   lines(Sub_metering_2~Datetime,col='Red')
   lines(Sub_metering_3~Datetime,col='Blue')
   legend("topright", col=c("black", "red", "blue"), lty=1, lwd=2, bty="n",
          legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
   plot(Global_reactive_power~Datetime, type="l", 
-       ylab="Global Rective Power (kilowatts)",xlab="")
+       ylab="Global_reactive_power",xlab="datetime")
 })
 
 # Saving to file
