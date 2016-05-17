@@ -1,31 +1,63 @@
+#################################################################################
+
+# Fetching the data
+
 # The memory check was done and the data can be read in the memory
 
-# Getting complete dataset
-# The data file should be downloaded in the working directory
-# titled "household_power_consumption.txt" without the quotes
+# I assume that the data file "household_power_consumption.txt" is in the working directory,
+# if it is not the case, the script attempts to download the zip file, unzip it to get the
+# data file in the working directory
 
-data <- read.table("household_power_consumption.txt", header=T, sep=';', na.strings="?", 
-                   stringsAsFactors=F)           
+# The download.file method works for me using R version 3.2.4 on windows 7 with "wininet"
 
+if(!file.exists("household_power_consumption.txt")) {
+  
+  url <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip"
+  destfile <- "consumption.zip"
+  download.file(url, destfile, "wininet")
+  unzip("consumption.zip")
+}
 
-data$Date <- as.Date(data$Date, format="%d/%m/%Y")
+filename <- "household_power_consumption.txt"
 
-# Subsetting the data
-my_data <- subset(data, subset=(Date >= "2007-02-01" & Date <= "2007-02-02"))
+# The script checks if the sqldf package is already installed
+# If not, it attempts to install and then load the sqldf package
 
-# Garbage Collection, clear un-necessary variables from memory
-rm(data)
+if(!is.element('sqldf', installed.packages()[,1]))
+{install.packages('sqldf')
+}
+library(sqldf)
 
-# Converting dates          
-datetime <- paste(as.Date(my_data$Date), my_data$Time)
-my_data$Datetime <- as.POSIXct(datetime)
+# Next, I use the sqldf package's read.csv.sql function to read the data
+# Instead of getting complete dataset, I only fetch the data for 1/2/2007 or 2/2/2007
+
+tab5rows <- read.table(filename, header = TRUE, nrows = 5, sep=";") # to get classes
+classes <- sapply(tab5rows, class)
+
+data <- read.csv.sql(filename, sql = 'select * from file where Date = "1/2/2007" or Date = "2/2/2007"', sep=";", colClasses = classes)
+
+data$Date <- as.Date(data$Date, "%d/%m/%Y")
+
+Sys.setlocale("LC_TIME", "English") # Windows
+
+DateTime<-paste(data$Date,data$Time)
+data$DateTime <- strptime(DateTime, "%Y-%m-%d %H:%M:%S")
+
+# To set the xlim explicitly
+xlims <- as.numeric(c(data$DateTime[1],data$DateTime[2880]))
+t<-c(data$DateTime[1],data$DateTime[2880])
+
+############################################################################
+
+# Plotting
 
 # Plot 2
-par(mfrow = c(1,1), oma=c(0,0,2,0), bg= "transparent")
-plot(my_data$Global_active_power~my_data$Datetime, type="l",
-     ylab="Global Active Power (kilowatts)", xlab="")
+png("plot2.png", width=480,height=480,units="px", bg="transparent")
 
+plot(data$DateTime,data$Global_active_power, type="n", main="", xlab="", ylab="Global Active Power (kilowatts)",xlim=xlims,xaxs ="r")
+lines(data$DateTime,data$Global_active_power)
 
-# Saving to file
-dev.copy(png, file="plot2.png", height=480, width=480)
+axis.POSIXct(side=1, t, labels=FALSE, lwd=2)
+axis(side = 2, lwd = 2)
+
 dev.off()

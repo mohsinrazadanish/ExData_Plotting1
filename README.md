@@ -2,13 +2,15 @@
 
 The script files and plots are provided. Please download/copy the data file in to working directory.
 
-To run this scripts, please do the following:
+The file should be named "household_power_consumption.txt".
 
-* Download the scripts (plot1.R, plot2.R, plot3.R, plot4.R) to a local directory.
+In case the file is not in the working directory, the scripts attemtp to download the zip file, and then unzip
+it to get the file in the working directory.
 
-* Download the data from (or copy from your local drive):
-https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip
+To run the scripts, please do the following:
 
-* Extract the data into the working directory and name it "household_power_consumption.txt" without the quotes
+* Download the scripts (plot1.R, plot2.R, plot3.R, plot4.R) to the working directory.
 
 * Run the scripts
+
+Note: The scripts attempt to load the file, but it is convenient to have the data file in the working directory
