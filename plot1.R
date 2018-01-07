@@ -8,6 +8,8 @@
 # if it is not the case, the script attempts to download the zip file, unzip it to get the
 # data file in the working directory
 
+
+
 # The download.file method works for me using R version 3.2.4 on windows 7 with "wininet"
 
 if(!file.exists("household_power_consumption.txt")) {
@@ -61,3 +63,6 @@ axis(side = 1, lwd=2)
 axis(side = 2, lwd = 2)
 
 dev.off()
+
+
+# This is a test comment for git
